@@ -38,6 +38,7 @@
         code {
             font-family: 'Courier New', monospace;
             color: #d63384;
+            white-space: nowrap; /* 防止换行 */
         }
         button {
             background-color: #4CAF50;
@@ -66,8 +67,8 @@
         <button onclick="copyToClipboard('git add .')"><i class="fas fa-copy"></i> 复制</button>
     </div>
     <div class="command">
-        <code>git commit -m "本次提交内容提示"</code>
-        <button onclick="copyToClipboard('git commit -m \"本次提交内容提示\"')"><i class="fas fa-copy"></i> 复制</button>
+        <code>git commit -m</code>
+        <button onclick="copyToClipboard('git commit -m')"><i class="fas fa-copy"></i> 复制</button>
     </div>
     <div class="command">
         <code>git push --force origin master:<分支></code>
@@ -76,8 +77,12 @@
 
     <script>
         function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-            // 不再显示提示窗口
+            const tempTextArea = document.createElement('textarea'); // 创建临时文本区域
+            tempTextArea.value = text; // 将要复制的文本赋值给临时文本区域
+            document.body.appendChild(tempTextArea); // 将文本区域添加到文档中
+            tempTextArea.select(); // 选中文本区域中的文本
+            document.execCommand('copy'); // 执行复制命令
+            document.body.removeChild(tempTextArea); // 移除临时文本区域
         }
     </script>
 </body>
