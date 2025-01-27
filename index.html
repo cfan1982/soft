@@ -1,89 +1,661 @@
 <!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Git 命令复制工具</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        h1 {
-            margin-bottom: 20px;
-            color: #4CAF50;
-        }
-        p {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .command {
-            background: #fff;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 600px;
-        }
-        code {
-            font-family: 'Courier New', monospace;
-            color: #d63384;
-            white-space: nowrap; /* 防止换行 */
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
-    <h1>Git 命令复制工具</h1>
-    <p>点击“复制”按钮将命令复制到剪贴板。</p>
 
-    <div class="command">
-        <code>git init</code>
-        <button onclick="copyToClipboard('git init')"><i class="fas fa-copy"></i> 复制</button>
+<html lang="zh">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Git 命令复制工具</title>
+
+    <!-- 引入 Font Awesome 图标库 -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+
+        /* 全局样式 */
+
+        body {
+
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;  /* 优先使用系统字体 */
+
+            background-color: #f4f4f4;  /* 浅灰色背景 */
+
+            color: #333;
+
+            padding: 20px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+        }
+
+
+
+        /* 页面标题样式 */
+
+        h1 {
+
+            margin-bottom: 30px;
+
+            color: #000;  /* 改为纯黑色 */
+
+            text-align: center;
+
+        }
+
+
+
+        /* 命令容器样式 */
+
+        .command-container {
+
+            width: 100%;
+
+            max-width: 800px;  /* 限制最大宽度 */
+
+            background: #fff;
+
+            border-radius: 8px;
+
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+            padding: 10px;  /* 减少内边距 */
+
+        }
+
+
+
+        /* 单个命令区块样式 */
+
+        .command {
+
+            position: relative;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            padding: 10px 0;  /* 减少命令区块的上下间距 */
+
+            border-bottom: 1px solid #e0e0e0;
+
+        }
+
+
+
+        /* 最后一个命令不显示底部边框 */
+
+        .command:last-child {
+
+            border-bottom: none;
+
+        }
+
+
+
+        /* 命令内容区域样式 */
+
+        .command > div {
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 15px;  /* 标题和命令之间的间距 */
+
+        }
+
+
+
+        /* 命令标题样式 */
+
+        .command strong {
+
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+
+            font-weight: 600;
+
+            font-size: 24px;
+
+            color: #495057;
+
+        }
+
+
+
+        /* 命令块样式 */
+
+        .command-block {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            width: 100%;
+
+            margin: 5px 0 0 0;
+
+            padding: 0;
+
+        }
+
+
+
+        /* 命令内容样式 */
+
+        .command-content {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+
+        /* 代码样式 */
+
+        code {
+
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+
+            background: #f8f9fa;
+
+            padding: 8px 12px;
+
+            border-radius: 4px;
+
+            font-size: 24px;
+
+            white-space: nowrap;
+
+            display: flex;  /* 改为flex布局 */
+
+            align-items: center;  /* 垂直居中 */
+
+            gap: 12px;  /* span之间的间距 */
+
+            text-decoration: none;  /* 移除下划线 */
+
+        }
+
+
+
+        code span {
+
+            display: inline-block;  /* 改为内联块显示 */
+
+            text-decoration: none;  /* 移除下划线 */
+
+        }
+
+
+
+        /* git 命令颜色 */
+
+        code .git {
+
+            color: #e84393;  /* 粉红色 */
+
+        }
+
+
+
+        /* 命令颜色 */
+
+        code .command {
+
+            color: #000;  /* 黑色 */
+
+        }
+
+
+
+        /* 参数颜色 */
+
+        code .param {
+
+            color: #f39c12;  /* 橙色 */
+
+        }
+
+
+
+        /* 按钮组样式 */
+
+        .button-group {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;  /* 减少按钮之间的间距 */
+
+        }
+
+
+
+        /* 复制成功提示样式 */
+
+        .copy-tooltip {
+
+            position: static;
+
+            background-color: #28a745;
+
+            color: white;
+
+            padding: 5px 10px;
+
+            border-radius: 4px;
+
+            font-size: 14px;
+
+            opacity: 0;  /* 默认隐藏 */
+
+            transition: opacity 0.3s;
+
+            pointer-events: none;  /* 防止提示框影响点击 */
+
+        }
+
+
+
+        /* 显示提示框 */
+
+        .copy-tooltip.show {
+
+            opacity: 1;
+
+        }
+
+
+
+        /* 复制按钮样式 */
+
+        button {
+
+            position: relative;
+
+            z-index: 2;
+
+            background-color: #6c757d;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 4px;
+
+            padding: 8px 15px;
+
+            cursor: pointer;
+
+            transition: all 0.3s;
+
+            white-space: nowrap;
+
+            height: fit-content;
+
+            font-size: 16px;
+
+        }
+
+
+
+        /* 按钮悬停效果 */
+
+        button:hover {
+
+            background-color: #45a049;
+
+        }
+
+
+
+        .command span {
+
+            text-decoration: none;  /* 移除下划线 */
+
+            border-bottom: none;  /* 移除底部边框 */
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Git 命令复制工具</h1>
+
+    <!-- 命令列表容器 -->
+
+    <div class="command-container">
+
+        <!-- Git 初始化命令 -->
+
+        <div class="command">
+
+            <div>
+
+                <strong>1. 初始化 git 储存</strong>
+
+                <div class="command-block">
+
+                    <div class="command-content">
+
+                        <code><span class="git">git</span> <span class="command">init</span></code>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <span class="copy-tooltip">已复制!</span>
+
+                        <button onclick="copyToClipboard(this, 'git init')">
+
+                            <i class="fas fa-copy"></i> 复制
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="command">
+
+            <div>
+
+                <strong>2. 需要提交的所有修改放到暂存区</strong>
+
+                <div class="command-block">
+
+                    <div class="command-content">
+
+                        <code><span class="git">git</span> <span class="command">add</span> <span class="param">.</span></code>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <span class="copy-tooltip">已复制!</span>
+
+                        <button onclick="copyToClipboard(this, 'git add .')">
+
+                            <i class="fas fa-copy"></i> 复制
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="command">
+
+            <div>
+
+                <strong>3. 将缓存区的文件，提交到本地仓库（版本库）</strong>
+
+                <div class="command-block">
+
+                    <div class="command-content">
+
+                        <code><span class="git">git</span> <span class="command">commit</span> <span class="param">-m</span> <span class="param">""</span></code>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <span class="copy-tooltip">已复制!</span>
+
+                        <button onclick="copyToClipboard(this, 'git commit -m &quot;&quot;')">
+
+                            <i class="fas fa-copy"></i> 复制
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="command">
+
+            <div>
+
+                <strong>4. 查看工作区、暂存区的状态</strong>
+
+                <div class="command-block">
+
+                    <div class="command-content">
+
+                        <code><span class="git">git</span> <span class="command">status</span></code>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <span class="copy-tooltip">已复制!</span>
+
+                        <button onclick="copyToClipboard(this, 'git status')">
+
+                            <i class="fas fa-copy"></i> 复制
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="command">
+
+            <div>
+
+                <strong>5. 查看历史提交(commit)记录</strong>
+
+                <div class="command-block">
+
+                    <div class="command-content">
+
+                        <code><span class="git">git</span> log</code>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <span class="copy-tooltip">已复制!</span>
+
+                        <button onclick="copyToClipboard(this, 'git log')">
+
+                            <i class="fas fa-copy"></i> 复制
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="command">
+
+            <div>
+
+                <strong>6. 版本回退（~ 后面的数字表示回退多少个版本）</strong>
+
+                <div class="command-block">
+
+                    <div class="command-content">
+
+                        <code><span class="git">git</span> <span class="command">reset</span> <span class="param">--hard</span> <span class="param">HEAD~1</span></code>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <span class="copy-tooltip">已复制!</span>
+
+                        <button onclick="copyToClipboard(this, 'git reset --hard HEAD~1')">
+
+                            <i class="fas fa-copy"></i> 复制
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="command">
+
+            <div>
+
+                <strong>7. 回到指定哈希值对应的版本</strong>
+
+                <div class="command-block">
+
+                    <div class="command-content">
+
+                        <code><span class="git">git</span> <span class="command">reset</span> <span class="param">--hard</span> <span class="param">&lt;Hash&gt;</span></code>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <span class="copy-tooltip">已复制!</span>
+
+                        <button onclick="copyToClipboard(this, 'git reset --hard ')">
+
+                            <i class="fas fa-copy"></i> 复制
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="command">
+
+            <div>
+
+                <strong>8. 强制推送到服务器</strong>
+
+                <div class="command-block">
+
+                    <div class="command-content">
+
+                        <code><span class="git">git</span> <span class="command">push</span> <span class="param">--force</span> <span class="param">origin</span> <span class="param">master</span></code>
+
+                    </div>
+
+                    <div class="button-group">
+
+                        <span class="copy-tooltip">已复制!</span>
+
+                        <button onclick="copyToClipboard(this, 'git push --force origin master')">
+
+                            <i class="fas fa-copy"></i> 复制
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-    <div class="command">
-        <code>git add .</code>
-        <button onclick="copyToClipboard('git add .')"><i class="fas fa-copy"></i> 复制</button>
-    </div>
-    <div class="command">
-        <code>git commit -m</code>
-        <button onclick="copyToClipboard('git commit -m')"><i class="fas fa-copy"></i> 复制</button>
-    </div>
-    <div class="command">
-        <code>git push --force origin master:<分支></code>
-        <button onclick="copyToClipboard('git push --force origin master:<分支>')"><i class="fas fa-copy"></i> 复制</button>
-    </div>
+
+
 
     <script>
-        function copyToClipboard(text) {
-            const tempTextArea = document.createElement('textarea'); // 创建临时文本区域
-            tempTextArea.value = text; // 将要复制的文本赋值给临时文本区域
-            document.body.appendChild(tempTextArea); // 将文本区域添加到文档中
-            tempTextArea.select(); // 选中文本区域中的文本
-            document.execCommand('copy'); // 执行复制命令
-            document.body.removeChild(tempTextArea); // 移除临时文本区域
+
+        /**
+
+         * 复制文本到剪贴板并显示提示
+
+         * @param {HTMLElement} button - 触发复制的按钮元素
+
+         * @param {string} text - 要复制的文本
+
+         */
+
+        function copyToClipboard(button, text) {
+
+            // 解码 HTML 实体（处理引号等特殊字符）
+
+            const decodedText = text.replace(/&quot;/g, '"');
+
+            
+
+            // 使用 Clipboard API 复制文本
+
+            navigator.clipboard.writeText(decodedText).then(() => {
+
+                // 获取并显示提示元素
+
+                const tooltip = button.previousElementSibling;
+
+                tooltip.classList.add('show');
+
+                
+
+                // 2秒后隐藏提示
+
+                setTimeout(() => {
+
+                    tooltip.classList.remove('show');
+
+                }, 2000);
+
+            });
+
         }
+
     </script>
+
 </body>
+
 </html>
